@@ -1,0 +1,38 @@
+﻿@model Treinamentos.Models.RegisterModel
+@{
+    ViewBag.Title = "Cadastro de usuário";
+}
+
+<section>
+<hgroup class="title">
+    <h1>@ViewBag.Title</h1>
+</hgroup>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <fieldset>
+        <legend>Dados cadastrais</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.UserName, "Nome de usuário")
+                @Html.TextBoxFor(m => m.UserName)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Password, "Senha")
+                @Html.PasswordFor(m => m.Password)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.ConfirmPassword, "Confirme a senha")
+                @Html.PasswordFor(m => m.ConfirmPassword)
+            </li>
+        </ol>
+        <input type="submit" value="Register" />
+    </fieldset>
+}
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

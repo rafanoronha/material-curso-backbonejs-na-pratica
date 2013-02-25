@@ -1,0 +1,12 @@
+﻿body > section, #page section {
+    margin: 1%;
+    padding: 1%;
+}
+
+.table-hover tr {
+    cursor: pointer;
+}
+
+input[data-mode=alt] {
+    display: none;
+}
