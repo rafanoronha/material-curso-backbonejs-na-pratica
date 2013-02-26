@@ -14,6 +14,18 @@ App.Router = Backbone.Router.extend({
     }
 });
 
+App.MenuView = Backbone.View.extend({
+    el: 'nav',
+    events: {
+        'click [data-action=home]': 'home'
+    },
+    home: function (e) {
+        e.preventDefault();
+        App.listarTurmas();
+        App.router.navigate('');
+    }
+});
+
 App.TurmasView = Backbone.View.extend({
     template: _.template($('#turmasTp').html()),
     render: function () {
@@ -23,4 +35,5 @@ App.TurmasView = Backbone.View.extend({
 });
 
 App.router = new App.Router();
+App.menuView = new App.MenuView();
 Backbone.history.start();
