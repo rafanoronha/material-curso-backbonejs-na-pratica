@@ -4,6 +4,7 @@ namespace Treinamentos.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Treinamentos.Models;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Treinamentos.Models.TreinamentosContext>
     {
@@ -26,6 +27,14 @@ namespace Treinamentos.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
+            context.Instrutors.AddOrUpdate(
+                x => x.Nome,
+                new Instrutor { Nome = "Rafa Noronha" },
+                new Instrutor { Nome = "Breno Ferreira" },
+                new Instrutor { Nome = "Victor Cavalcante" },
+                new Instrutor { Nome = "Giovanni Bassi" }
+                );
         }
     }
 }
