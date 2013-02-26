@@ -2,7 +2,7 @@
     <div class="navbar-inner">
         <a href="#" class="brand active" data-action="home">Treinamentos</a>
         <ul class="nav">
-            <li><a href="#">Instrutores</a></li>
+            <li><a href="#" data-action="instrutores">Instrutores</a></li>
         </ul>
     </div>
 </nav>
@@ -32,6 +32,25 @@
             </tbody>
         </table>
     </section>
+</script>
+<script id="instrutoresTp" type="text/html">
+    <section>
+        <hgroup>
+            <h1>Instrutores</h1>
+        </hgroup>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+</script>
+<script id="instrutorTp" type="text/html">
+    <td><%= nome %></td>
 </script>
 
 @Scripts.Render("~/bundles/app")
