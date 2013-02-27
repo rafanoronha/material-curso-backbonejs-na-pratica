@@ -26,12 +26,35 @@
             <tbody>
             </tbody>
         </table>
+        <a href="#" data-action="new">Nova Turma</a>
     </section>
 </script>
 <script id="turmaTp" type="text/html">
     <td><%= data.nomeTreinamento %></td>
     <td><%= data.periodo %></td>
     <td><%= data.nomeInstrutor %></td>
+</script>
+<script id="formularioTurmaTp" type="text/html">
+    <section>
+        <hgroup>
+            <h1>Turmas</h1>
+        </hgroup>
+        <form>
+            <legend>Cadastro de Turma</legend>
+            <label>Treinamento</label>
+            <select name="codigoTreinamento" value="" />
+            <label>Instrutor</label>
+            <select name="codigoInstrutor" value="" />
+            <label>Início</label>
+            <input type="date" name="inicio" value="" />
+            <label>Fim</label>
+            <input type="date" name="fim" value="" />
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" data-action="submit">Salvar</button>
+                <button type="button" class="btn" data-action="cancel">Cancelar</button>            
+            </div>
+        </form>
+    </section>
 </script>
 <script id="instrutoresTp" type="text/html">
     <section>
@@ -69,6 +92,9 @@
             </div>
         </form>
     </section>
+</script>
+<script id="opcaoComboTp" type="text/html">
+    <option value="<%= valor %>"><%= nome %></option>
 </script>
 
 @Scripts.Render("~/bundles/app")

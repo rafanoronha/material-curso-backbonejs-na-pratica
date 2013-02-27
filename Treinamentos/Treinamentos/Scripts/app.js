@@ -22,6 +22,18 @@ App.listarTurmas = function (opt) {
     $('#page').empty().append(el);
 };
 
+App.formularioTurma = function (model) {
+    var el = new App.FormularioTurmaView({
+        model: model
+    }).render().$el;
+
+    $('#page').empty().append(el);
+}
+
+App.novaTurma = function () {
+    App.formularioTurma(new App.Turma);
+};
+
 App.listarInstrutores = function () {
     App.instrutores.fetch();
 
@@ -51,12 +63,16 @@ App.editarInstrutor = function (instrutor) {
 App.Router = Backbone.Router.extend({
     routes: {
         '': 'home',
+        'turmas/nova': 'novaTurma',
         'instrutores': 'listarInstrutores',
         'instrutores/novo': 'novoInstrutor',
         'instrutores/:id': 'editarInstrutor'
     },
     home: function () {
         App.listarTurmas();
+    },
+    novaTurma: function () {
+        App.novaTurma();
     },
     listarInstrutores: function () {
         App.listarInstrutores();
@@ -93,6 +109,25 @@ App.MenuView = Backbone.View.extend({
     }
 });
 
+App.ComboView = Backbone.View.extend({
+    template: _.template($('#opcaoComboTp').html()),
+    initialize: function () {
+        this.collection.on('reset', this.render, this);
+        this.collection.fetch();
+    },
+    render: function () {
+        var html = '<option value="">Selecione</option>';
+        this.collection.each(function (model) {
+            var option = this.template({
+                nome: model.attributes.nome,
+                valor: model.id
+            });
+            html += option;
+        }, this);
+        this.$el.html(html);
+    }
+});
+
 App.Turma = Backbone.Model.extend({
     urlRoot: '/api/turmas/',
     parse: function (data) {
@@ -106,7 +141,20 @@ App.Turma = Backbone.Model.extend({
             nomeInstrutor: data.instrutor.nome
         };
         return attributes;
-    }
+    },
+    toJSON: function () {
+        var json = {
+            inicio: this.attributes.inicio,
+            fim: this.attributes.fim,
+            treinamento: {
+                id: this.attributes.codigoTreinamento
+            },
+            instrutor: {
+                id: this.attributes.codigoInstrutor
+            }
+        };
+        return json;
+    },
 });
 
 App.Turmas = Backbone.Collection.extend({
@@ -114,10 +162,21 @@ App.Turmas = Backbone.Collection.extend({
     model: App.Turma
 });
 
+App.Treinamento = Backbone.Model.extend({
+});
+
+App.Treinamentos = Backbone.Collection.extend({
+    url: '/api/treinamentos/',
+    model: App.Treinamento
+});
+
 App.TurmasView = Backbone.View.extend({
     template: _.template($('#turmasTp').html()),
     initialize: function () {
         this.collection.on('reset', this.renderData, this);
+    },
+    events: {
+        'click [data-action=new]': 'new'
     },
     render: function () {
         this.$el.html(this.template());
@@ -133,6 +192,11 @@ App.TurmasView = Backbone.View.extend({
             view.$el.appendTo(tbody);
             view.render();
         }, this);
+    },
+    'new': function (e) {
+        e.preventDefault();
+        App.novaTurma();
+        App.router.navigate('turmas/nova');
     }
 });
 
@@ -141,13 +205,54 @@ App.TurmaView = Backbone.View.extend({
     render: function () {
         var json = _.extend(
             {},
-            this.model.toJSON(), {
+            this.model.attributes, {
                 periodo: App.formatDatePeriod(this.model.attributes.inicio, this.model.attributes.fim)
             });
 
         var data = { data: json };
         this.$el.html(this.template(data));
         return this;
+    }
+});
+
+App.FormularioTurmaView = Backbone.View.extend({
+    template: _.template($('#formularioTurmaTp').html()),
+    events: {
+        'click [data-action=cancel]': 'cancel',
+        'click [data-action=submit]': 'submit'
+    },
+    render: function () {
+        this.$el.html(this.template());
+        this.carregarCombos();
+        return this;
+    },
+    submit: function () {
+        this.model.save({
+            codigoTreinamento: this.$('[name=codigoTreinamento]').val(),
+            codigoInstrutor: this.$('[name=codigoInstrutor]').val(),
+            inicio: this.$('[name=inicio]').val(),
+            fim: this.$('[name=fim]').val(),
+        }, {
+            success: this.listarTurmas
+        });
+    },
+    cancel: function () {
+        this.listarTurmas();
+    },
+    listarTurmas: function () {
+        App.listarTurmas();
+        App.router.navigate('');
+    },
+    carregarCombos: function () {
+        var comboTreinamento = new App.ComboView({
+            el: this.$('[name=codigoTreinamento]'),
+            collection: App.treinamentos
+        });
+
+        var comboInstrutor = new App.ComboView({
+            el: this.$('[name=codigoInstrutor]'),
+            collection: App.instrutores
+        });
     }
 });
 
@@ -249,5 +354,7 @@ App.router = new App.Router();
 App.menuView = new App.MenuView();
 App.instrutores = new App.Instrutores();
 App.turmas = new App.Turmas();
+App.treinamentos = new App.Treinamentos();
+
 
 Backbone.history.start();
