@@ -116,10 +116,6 @@ App.ComboView = Backbone.View.extend({
         this.collection.fetch();
     },
     render: function () {
-        if (this.rendered) {
-            alert("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuurgh");
-        }
-
         var html = '<option value="">Selecione</option>';
         this.collection.each(function (model) {
             var option = this.template({
@@ -129,8 +125,6 @@ App.ComboView = Backbone.View.extend({
             html += option;
         }, this);
         this.$el.html(html);
-
-        this.rendered = true;
     }
 });
 
