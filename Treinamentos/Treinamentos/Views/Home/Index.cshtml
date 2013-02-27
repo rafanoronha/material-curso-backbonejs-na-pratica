@@ -47,10 +47,27 @@
             <tbody>
             </tbody>
         </table>
+        <a href="#" data-action="new">Novo Instrutor</a>
     </section>
 </script>
 <script id="instrutorTp" type="text/html">
     <td><%= nome %></td>
+</script>
+<script id="formularioInstrutorTp" type="text/html">
+    <section>
+        <hgroup>
+            <h1>Instrutores</h1>
+        </hgroup>
+        <form>
+            <legend>Cadastro de Instrutor</legend>
+            <label>Nome</label>
+            <input type="text" name="nome" />
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" data-action="submit">Salvar</button>
+                <button type="button" class="btn" data-action="cancel">Cancelar</button>  
+            </div>
+        </form>
+    </section>
 </script>
 
 @Scripts.Render("~/bundles/app")
