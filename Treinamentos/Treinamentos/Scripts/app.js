@@ -1,7 +1,24 @@
 ﻿var App = {};
 
+App.formatDate = function (d) {
+    var date = d.getDate();
+    var month = d.getMonth();
+    month++;
+    var year = d.getFullYear();
+    return date + "/" + month + "/" + year;
+};
+
+App.formatDatePeriod = function (x, y) {
+    return App.formatDate(x) + ' a ' + App.formatDate(y);
+};
+
 App.listarTurmas = function (opt) {
-    var el = new App.TurmasView().render().$el;
+    App.turmas.fetch();
+
+    var el = new App.TurmasView({
+        collection: App.turmas
+    }).render().$el;
+
     $('#page').empty().append(el);
 };
 
@@ -11,9 +28,9 @@ App.listarInstrutores = function () {
     var el = new App.InstrutoresView({
         collection: App.instrutores
     }).render().$el;
-    
+
     $('#page').empty().append(el);
-}
+};
 
 App.formularioInstrutor = function (model) {
     var el = new App.FormularioInstrutorView({
@@ -21,7 +38,7 @@ App.formularioInstrutor = function (model) {
     }).render().$el;
 
     $('#page').empty().append(el);
-}
+};
 
 App.novoInstrutor = function () {
     App.formularioInstrutor(new App.Instrutor);
@@ -76,10 +93,60 @@ App.MenuView = Backbone.View.extend({
     }
 });
 
+App.Turma = Backbone.Model.extend({
+    urlRoot: '/api/turmas/',
+    parse: function (data) {
+        var attributes = {
+            id: data.id,
+            inicio: new Date(Date.parse(data.inicio)),
+            fim: new Date(Date.parse(data.fim)),
+            codigoTreinamento: data.treinamento.id,
+            nomeTreinamento: data.treinamento.nome,
+            codigoInstrutor: data.instrutor.id,
+            nomeInstrutor: data.instrutor.nome
+        };
+        return attributes;
+    }
+});
+
+App.Turmas = Backbone.Collection.extend({
+    url: '/api/turmas/',
+    model: App.Turma
+});
+
 App.TurmasView = Backbone.View.extend({
     template: _.template($('#turmasTp').html()),
+    initialize: function () {
+        this.collection.on('reset', this.renderData, this);
+    },
     render: function () {
         this.$el.html(this.template());
+        return this;
+    },
+    renderData: function () {
+        var tbody = this.$('tbody');
+        this.collection.each(function (turma) {
+            var view = new App.TurmaView({
+                model: turma,
+                tagName: 'tr'
+            });
+            view.$el.appendTo(tbody);
+            view.render();
+        }, this);
+    }
+});
+
+App.TurmaView = Backbone.View.extend({
+    template: _.template($('#turmaTp').html()),
+    render: function () {
+        var json = _.extend(
+            {},
+            this.model.toJSON(), {
+                periodo: App.formatDatePeriod(this.model.attributes.inicio, this.model.attributes.fim)
+            });
+
+        var data = { data: json };
+        this.$el.html(this.template(data));
         return this;
     }
 });
@@ -181,5 +248,6 @@ App.FormularioInstrutorView = Backbone.View.extend({
 App.router = new App.Router();
 App.menuView = new App.MenuView();
 App.instrutores = new App.Instrutores();
+App.turmas = new App.Turmas();
 
 Backbone.history.start();
