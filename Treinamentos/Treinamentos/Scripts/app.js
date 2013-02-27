@@ -12,6 +12,31 @@ App.formatDatePeriod = function (x, y) {
     return App.formatDate(x) + ' a ' + App.formatDate(y);
 };
 
+App.alternateInputMode = function (e) {
+    e.preventDefault();
+    var link = $(e.target);
+    var current = link.siblings('[data-mode=current]');
+    var alt = current.siblings('[data-mode=alt]');
+    link.fadeOut('slow', function () {
+        var currentText = link.text();
+        var altText = link.attr('data-alt-text');
+        link.text(altText);
+        link.attr('data-alt-text', currentText);
+        link.fadeIn('slow');
+    });
+    current.attr('data-mode', 'alt');
+    current.fadeOut('slow', function () {
+        current.val('').trigger('change');
+        if (current.data('tooltip')) {
+            current.tooltip('destroy');
+        }
+        alt.attr('data-mode', 'current')
+        alt.fadeIn('slow', function () {
+            alt.focus();
+        });
+    });
+};
+
 App.listarTurmas = function (opt) {
     App.turmas.fetch();
 
@@ -147,10 +172,12 @@ App.Turma = Backbone.Model.extend({
             inicio: this.attributes.inicio,
             fim: this.attributes.fim,
             treinamento: {
-                id: this.attributes.codigoTreinamento
+                id: this.attributes.codigoTreinamento,
+                nome: this.attributes.nomeNovoTreinamento
             },
             instrutor: {
-                id: this.attributes.codigoInstrutor
+                id: this.attributes.codigoInstrutor,
+                nome: this.attributes.nomeNovoInstrutor
             }
         };
         return json;
@@ -219,7 +246,8 @@ App.FormularioTurmaView = Backbone.View.extend({
     template: _.template($('#formularioTurmaTp').html()),
     events: {
         'click [data-action=cancel]': 'cancel',
-        'click [data-action=submit]': 'submit'
+        'click [data-action=submit]': 'submit',
+        'click [data-action=alternate-input-mode]': 'alternateInputMode'
     },
     remove: function () {
         Backbone.View.prototype.remove.call(this);
@@ -232,14 +260,15 @@ App.FormularioTurmaView = Backbone.View.extend({
         return this;
     },
     submit: function () {
-        this.model.save({
+        var attributes = {
             codigoTreinamento: this.$('[name=codigoTreinamento]').val(),
+            nomeNovoTreinamento: this.$('[name=nomeNovoTreinamento]').val(),
             codigoInstrutor: this.$('[name=codigoInstrutor]').val(),
+            nomeNovoInstrutor: this.$('[name=nomeNovoInstrutor]').val(),
             inicio: this.$('[name=inicio]').val(),
-            fim: this.$('[name=fim]').val(),
-        }, {
-            success: this.listarTurmas
-        });
+            fim: this.$('[name=fim]').val()
+        };
+        this.model.save(attributes, { success: this.listarTurmas });
     },
     cancel: function () {
         this.listarTurmas();
@@ -259,6 +288,9 @@ App.FormularioTurmaView = Backbone.View.extend({
             el: this.$('[name=codigoInstrutor]'),
             collection: App.instrutores
         });
+    },
+    alternateInputMode: function () {
+        App.alternateInputMode.apply(this, arguments);
     }
 });
 

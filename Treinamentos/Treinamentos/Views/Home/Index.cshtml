@@ -41,10 +41,18 @@
         </hgroup>
         <form>
             <legend>Cadastro de Turma</legend>
-            <label>Treinamento</label>
-            <select name="codigoTreinamento" value="" />
-            <label>Instrutor</label>
-            <select name="codigoInstrutor" value="" />
+           <div>
+                <label>Treinamento</label>
+                <select data-mode="current" name="codigoTreinamento" value="" />
+                <input data-mode="alt" name="nomeNovoTreinamento" placeholder="Nome do Treinamento" type="text"/>
+                <a href="#" data-action="alternate-input-mode" data-alt-text="Selecionar Treinamento Existente">Criar Novo Treinamento</a>
+            </div>
+            <div>
+                <label>Instrutor</label>
+                <select data-mode="current" name="codigoInstrutor" value="" />
+                <input data-mode="alt" name="nomeNovoInstrutor" placeholder="Nome do Instrutor" type="text"/>
+                <a href="#" data-action="alternate-input-mode" data-alt-text="Selecionar Instrutor Existente">Criar Novo Instrutor</a>
+            </div>
             <label>Início</label>
             <input type="date" name="inicio" value="" />
             <label>Fim</label>
