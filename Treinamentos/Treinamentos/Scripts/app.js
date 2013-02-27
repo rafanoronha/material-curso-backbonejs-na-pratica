@@ -112,7 +112,7 @@ App.MenuView = Backbone.View.extend({
 App.ComboView = Backbone.View.extend({
     template: _.template($('#opcaoComboTp').html()),
     initialize: function () {
-        this.collection.on('reset', this.render, this);
+        this.listenTo(this.collection, 'reset', this.render);
         this.collection.fetch();
     },
     render: function () {
@@ -227,6 +227,11 @@ App.FormularioTurmaView = Backbone.View.extend({
         'click [data-action=cancel]': 'cancel',
         'click [data-action=submit]': 'submit'
     },
+    remove: function () {
+        Backbone.View.prototype.remove.call(this);
+        this.comboTreinamento.remove();
+        this.comboInstrutor.remove();
+    },
     render: function () {
         this.$el.html(this.template());
         this.carregarCombos();
@@ -248,14 +253,15 @@ App.FormularioTurmaView = Backbone.View.extend({
     listarTurmas: function () {
         App.listarTurmas();
         App.router.navigate('');
+        this.remove();
     },
     carregarCombos: function () {
-        var comboTreinamento = new App.ComboView({
+        this.comboTreinamento = new App.ComboView({
             el: this.$('[name=codigoTreinamento]'),
             collection: App.treinamentos
         });
 
-        var comboInstrutor = new App.ComboView({
+        this.comboInstrutor = new App.ComboView({
             el: this.$('[name=codigoInstrutor]'),
             collection: App.instrutores
         });
