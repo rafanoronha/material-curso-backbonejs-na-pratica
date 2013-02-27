@@ -126,12 +126,24 @@ App.InstrutorView = Backbone.View.extend({
     tagName: 'tr',
     template: _.template($('#instrutorTp').html()),
     events: {
+        'click [data-action=delete]': 'delete',
         'click': 'select'
     },
     render: function () {
         var content = this.template(this.model.toJSON());
         this.$el.html(content);
         return this;
+    },
+    'delete': function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var that = this;
+        this.model.destroy({
+            success: function () {
+                that.$el.fadeOut('slow', that.$el.remove);
+            }
+        });
     },
     select: function () {
         App.editarInstrutor(this.model);
