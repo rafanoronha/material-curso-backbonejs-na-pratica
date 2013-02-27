@@ -38,7 +38,7 @@
         <hgroup>
             <h1>Instrutores</h1>
         </hgroup>
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <tr>
                     <th>Nome</th>
@@ -61,7 +61,7 @@
         <form>
             <legend>Cadastro de Instrutor</legend>
             <label>Nome</label>
-            <input type="text" name="nome" />
+            <input type="text" name="nome" value="<%= data.nome %>" />
             <div class="form-actions">
                 <button type="button" class="btn btn-primary" data-action="submit">Salvar</button>
                 <button type="button" class="btn" data-action="cancel">Cancelar</button>  

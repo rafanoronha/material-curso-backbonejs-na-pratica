@@ -27,11 +27,16 @@ App.novoInstrutor = function () {
     App.formularioInstrutor(new App.Instrutor);
 };
 
+App.editarInstrutor = function (instrutor) {
+    App.formularioInstrutor(instrutor);
+};
+
 App.Router = Backbone.Router.extend({
     routes: {
         '': 'home',
         'instrutores': 'listarInstrutores',
         'instrutores/novo': 'novoInstrutor',
+        'instrutores/:id': 'editarInstrutor'
     },
     home: function () {
         App.listarTurmas();
@@ -42,6 +47,15 @@ App.Router = Backbone.Router.extend({
     novoInstrutor: function () {
         App.novoInstrutor();
     },
+    editarInstrutor: function (id) {
+        new App.Instrutor({
+            id: id,
+        }).fetch({
+            success: function (model) {
+                App.editarInstrutor(model);
+            }
+        });
+    }
 });
 
 App.MenuView = Backbone.View.extend({
@@ -111,10 +125,17 @@ App.InstrutoresView = Backbone.View.extend({
 App.InstrutorView = Backbone.View.extend({
     tagName: 'tr',
     template: _.template($('#instrutorTp').html()),
+    events: {
+        'click': 'select'
+    },
     render: function () {
         var content = this.template(this.model.toJSON());
         this.$el.html(content);
         return this;
+    },
+    select: function () {
+        App.editarInstrutor(this.model);
+        App.router.navigate('instrutores/' + this.model.id);
     }
 });
 
@@ -125,7 +146,8 @@ App.FormularioInstrutorView = Backbone.View.extend({
         'click [data-action=submit]': 'submit'
     },
     render: function () {
-        this.$el.html(this.template());
+        var data = { data: this.model.toJSON() };
+        this.$el.html(this.template(data));
         return this;
     },
     submit: function () {
