@@ -11,7 +11,28 @@
     };
     var message = _.result(map, jqxhr.status) || "Erro ao comunicar com o servidor";
     alert(message);
+
+    if (400 !== jqxhr.status) {
+        throw new Error("Erro 500 na integração:\n" + jqxhr.responseText);
+    }
 });
+
+window.onerror = function (msg, url, lineNumber) {
+    var data = JSON.stringify({
+        msg: msg,
+        url: url,
+        lineNumber: lineNumber
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "/api/errors",
+        data: data,
+        contentType: "application/json; charset=utf-8",
+    });
+
+    return true;
+};
 
 var App = {};
 
