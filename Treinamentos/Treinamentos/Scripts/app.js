@@ -1,4 +1,25 @@
-﻿$(document).ajaxError(function (event, jqxhr, settings, exception) {
+﻿Backbone.Validation.configure({
+    forceUpdate: true
+});
+_.extend(Backbone.Validation.callbacks, {
+    valid: function (view, attr, selector) {
+        var input = view.$('[' + selector + '="' + attr + '"]:not([data-mode=alt])');
+        if (input.data('tooltip')) {
+            input.tooltip('destroy');
+        }
+    },
+    invalid: function (view, attr, error, selector) {
+        var input = view.$('[' + selector + '="' + attr + '"]:not([data-mode=alt])');
+        input.tooltip({
+            placement: 'bottom',
+            trigger: 'manual',
+            title: error
+        });
+        input.tooltip('show');
+    }
+});
+
+$(document).ajaxError(function (event, jqxhr, settings, exception) {
     var badRequestMessage = function (jqxhr) {
         var defaultMsg = "Solicitação inválida";
         var msg = jqxhr.responseText || defaultMsg;
@@ -377,7 +398,12 @@ App.FormularioTurmaView = Backbone.View.extend({
 });
 
 App.Instrutor = Backbone.Model.extend({
-    urlRoot: '/api/instrutores/'
+    urlRoot: '/api/instrutores/',
+    validation: {
+        nome: {
+            required: true
+        }
+    }
 });
 
 App.Instrutores = Backbone.Collection.extend({
@@ -449,17 +475,21 @@ App.FormularioInstrutorView = Backbone.View.extend({
         'click [data-action=cancel]': 'cancel',
         'click [data-action=submit]': 'submit'
     },
+    initialize: function() {
+        Backbone.Validation.bind(this);
+    },
     render: function () {
         var data = { data: this.model.toJSON() };
         this.$el.html(this.template(data));
         return this;
     },
     submit: function () {
-        this.model.save({
+        this.model.set({
             nome: this.$('[name=nome]').val()
-        }, {
-            success: this.listarInstrutores
         });
+        if (this.model.isValid(true)) {
+            this.model.save({}, { success: this.listarInstrutores });
+        }
     },
     cancel: function () {
         this.listarInstrutores();
