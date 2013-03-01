@@ -1,4 +1,19 @@
-﻿var App = {};
+﻿$(document).ajaxError(function (event, jqxhr, settings, exception) {
+    var badRequestMessage = function (jqxhr) {
+        var defaultMsg = "Solicitação inválida";
+        var msg = jqxhr.responseText || defaultMsg;
+        return msg;
+    };
+
+    var map = {
+        400: badRequestMessage(jqxhr),
+        500: "Servidor falhou o processamento da solicitação"
+    };
+    var message = _.result(map, jqxhr.status) || "Erro ao comunicar com o servidor";
+    alert(message);
+});
+
+var App = {};
 
 App.formatDate = function (d) {
     var date = d.getDate();
