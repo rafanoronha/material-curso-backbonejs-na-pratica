@@ -73,6 +73,24 @@ App.alternateInputMode = function (e) {
     });
 };
 
+App.region = {
+    el: $('#page'),
+    show: function (view) {
+        this.close();
+        view.render();
+        this.open(view);
+        this.currentView = view;
+    },
+    close: function () {
+        if (!this.currentView) { return; }
+        this.currentView.remove();
+        delete this.currentView;
+    },
+    open: function (view) {
+        this.el.empty().append(view.el);
+    }
+};
+
 App.listarTurmas = function (opt) {
     opt = opt || {};
     var options = _.extend({ fetch: true }, opt);
@@ -80,11 +98,11 @@ App.listarTurmas = function (opt) {
         App.turmas.fetch();
     }
 
-    var el = new App.TurmasView({
+    var view = new App.TurmasView({
         collection: App.turmas
-    }).render().$el;
+    });
 
-    $('#page').empty().append(el);
+    App.region.show(view);
 };
 
 App.formularioTurma = function (model, opt) {
@@ -95,11 +113,11 @@ App.formularioTurma = function (model, opt) {
         App.treinamentos.fetch();
     }
 
-    var el = new App.FormularioTurmaView({
+    var view = new App.FormularioTurmaView({
         model: model
-    }).render().$el;
+    });
 
-    $('#page').empty().append(el);
+    App.region.show(view);
 }
 
 App.novaTurma = function (opt) {
@@ -113,19 +131,19 @@ App.listarInstrutores = function (opt) {
         App.instrutores.fetch();
     }
 
-    var el = new App.InstrutoresView({
+    var view = new App.InstrutoresView({
         collection: App.instrutores
-    }).render().$el;
+    });
 
-    $('#page').empty().append(el);
+    App.region.show(view);
 };
 
 App.formularioInstrutor = function (model) {
-    var el = new App.FormularioInstrutorView({
+    var view = new App.FormularioInstrutorView({
         model: model
-    }).render().$el;
+    });
 
-    $('#page').empty().append(el);
+    App.region.show(view);
 };
 
 App.novoInstrutor = function () {
@@ -264,7 +282,7 @@ App.Treinamentos = Backbone.Collection.extend({
 App.TurmasView = Backbone.View.extend({
     template: _.template($('#turmasTp').html()),
     initialize: function () {
-        this.collection.on('reset', this.renderData, this);
+        this.listenTo(this.collection, 'reset', this.renderData);
     },
     events: {
         'click [data-action=new]': 'new'
@@ -370,7 +388,7 @@ App.Instrutores = Backbone.Collection.extend({
 App.InstrutoresView = Backbone.View.extend({
     template: _.template($('#instrutoresTp').html()),
     initialize: function () {
-        this.collection.on('reset', this.renderData, this);
+        this.listenTo(this.collection, 'reset', this.renderData);
     },
     events: {
         'click [data-action=new]': 'new'
