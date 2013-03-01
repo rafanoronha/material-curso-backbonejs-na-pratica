@@ -105,4 +105,14 @@
     <option value="<%= valor %>"><%= nome %></option>
 </script>
 
+<script id="turmas" type="text/javascript">
+    @Html.Raw(@Html.Action("TurmasBootstrap"))
+</script>
+<script id="treinamentos" type="text/javascript">
+    @Html.Raw(@Html.Action("TreinamentosBootstrap"))
+</script>
+<script id="instrutores" type="text/javascript">
+    @Html.Raw(@Html.Action("InstrutoresBootstrap"))
+</script>
+
 @Scripts.Render("~/bundles/app")

@@ -38,7 +38,11 @@ App.alternateInputMode = function (e) {
 };
 
 App.listarTurmas = function (opt) {
-    App.turmas.fetch();
+    opt = opt || {};
+    var options = _.extend({ fetch: true }, opt);
+    if (options.fetch) {
+        App.turmas.fetch();
+    }
 
     var el = new App.TurmasView({
         collection: App.turmas
@@ -47,7 +51,14 @@ App.listarTurmas = function (opt) {
     $('#page').empty().append(el);
 };
 
-App.formularioTurma = function (model) {
+App.formularioTurma = function (model, opt) {
+    opt = opt || {};
+    var options = _.extend({ fetchCombos: true }, opt);
+    if (options.fetchCombos) {
+        App.instrutores.fetch();
+        App.treinamentos.fetch();
+    }
+
     var el = new App.FormularioTurmaView({
         model: model
     }).render().$el;
@@ -55,12 +66,16 @@ App.formularioTurma = function (model) {
     $('#page').empty().append(el);
 }
 
-App.novaTurma = function () {
-    App.formularioTurma(new App.Turma);
+App.novaTurma = function (opt) {
+    App.formularioTurma(new App.Turma, opt);
 };
 
-App.listarInstrutores = function () {
-    App.instrutores.fetch();
+App.listarInstrutores = function (opt) {
+    opt = opt || {};
+    var options = _.extend({ fetch: true }, opt);
+    if (options.fetch) {
+        App.instrutores.fetch();
+    }
 
     var el = new App.InstrutoresView({
         collection: App.instrutores
@@ -85,6 +100,21 @@ App.editarInstrutor = function (instrutor) {
     App.formularioInstrutor(instrutor);
 };
 
+App.turmasBootstrap = function () {
+    var turmas = JSON.parse($('#turmas').html())
+    App.turmas.reset(turmas, { parse: true })
+};
+
+App.instrutoresBootstrap = function () {
+    var instrutores = JSON.parse($('#instrutores').html());
+    App.instrutores.reset(instrutores, { parse: true })
+};
+
+App.treinamentosBootstrap = function () {
+    var treinamentos = JSON.parse($('#treinamentos').html())
+    App.treinamentos.reset(treinamentos, { parse: true })
+};
+
 App.Router = Backbone.Router.extend({
     routes: {
         '': 'home',
@@ -94,25 +124,24 @@ App.Router = Backbone.Router.extend({
         'instrutores/:id': 'editarInstrutor'
     },
     home: function () {
-        App.listarTurmas();
+        App.listarTurmas({ fetch: false });
+        App.turmasBootstrap();
     },
     novaTurma: function () {
-        App.novaTurma();
+        App.novaTurma({ fetchCombos: false });
+        App.instrutoresBootstrap();
+        App.treinamentosBootstrap();
     },
     listarInstrutores: function () {
-        App.listarInstrutores();
+        App.listarInstrutores({ fetch: false });
+        App.instrutoresBootstrap();
     },
     novoInstrutor: function () {
         App.novoInstrutor();
     },
     editarInstrutor: function (id) {
-        new App.Instrutor({
-            id: id,
-        }).fetch({
-            success: function (model) {
-                App.editarInstrutor(model);
-            }
-        });
+        App.instrutoresBootstrap();
+        App.editarInstrutor(App.instrutores.get(id));
     }
 });
 
@@ -138,7 +167,6 @@ App.ComboView = Backbone.View.extend({
     template: _.template($('#opcaoComboTp').html()),
     initialize: function () {
         this.listenTo(this.collection, 'reset', this.render);
-        this.collection.fetch();
     },
     render: function () {
         var html = '<option value="">Selecione</option>';
@@ -390,9 +418,7 @@ App.FormularioInstrutorView = Backbone.View.extend({
 
 App.router = new App.Router();
 App.menuView = new App.MenuView();
-App.instrutores = new App.Instrutores();
 App.turmas = new App.Turmas();
 App.treinamentos = new App.Treinamentos();
-
-
+App.instrutores = new App.Instrutores();
 Backbone.history.start();
