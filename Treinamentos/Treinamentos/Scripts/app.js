@@ -282,9 +282,37 @@ App.Turma = Backbone.Model.extend({
                 id: this.attributes.codigoInstrutor,
                 nome: this.attributes.nomeNovoInstrutor
             }
-        };
+        }
         return json;
     },
+    validation: {
+        inicio: {
+            required: true
+        },
+        fim: {
+            required: true
+        },
+        codigoTreinamento: {
+            required: function () {
+                return !this.get('nomeNovoTreinamento');
+            }
+        },
+        nomeNovoTreinamento: {
+            required: function () {
+                return !this.get('codigoTreinamento');
+            }
+        },
+        codigoInstrutor: {
+            required: function () {
+                return !this.get('nomeNovoInstrutor');
+            }
+        },
+        nomeNovoInstrutor: {
+            required: function () {
+                return !this.get('codigoInstrutor');
+            }
+        },
+    }
 });
 
 App.Turmas = Backbone.Collection.extend({
@@ -352,6 +380,9 @@ App.FormularioTurmaView = Backbone.View.extend({
         'click [data-action=submit]': 'submit',
         'click [data-action=alternate-input-mode]': 'alternateInputMode'
     },
+    initialize: function() {
+        Backbone.Validation.bind(this);
+    },
     remove: function () {
         Backbone.View.prototype.remove.call(this);
         this.comboTreinamento.remove();
@@ -371,7 +402,12 @@ App.FormularioTurmaView = Backbone.View.extend({
             inicio: this.$('[name=inicio]').val(),
             fim: this.$('[name=fim]').val()
         };
-        this.model.save(attributes, { success: this.listarTurmas });
+
+        this.model.set(attributes);
+
+        if (this.model.isValid(true)) {
+            this.model.save({}, { success: this.listarTurmas });
+        }
     },
     cancel: function () {
         this.listarTurmas();
