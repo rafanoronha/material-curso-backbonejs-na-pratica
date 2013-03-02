@@ -492,18 +492,19 @@ App.FormularioInstrutorView = Backbone.View.extend({
         'click [data-action=cancel]': 'cancel',
         'click [data-action=submit]': 'submit'
     },
+    bindings: {
+        '[name=nome]': 'nome'
+    },
     initialize: function() {
         Backbone.Validation.bind(this);
     },
     render: function () {
         var data = { data: this.model.toJSON() };
         this.$el.html(this.template(data));
+        this.stickit();
         return this;
     },
     submit: function () {
-        this.model.set({
-            nome: this.$('[name=nome]').val()
-        });
         if (this.model.isValid(true)) {
             this.model.save({}, { success: this.listarInstrutores });
         }

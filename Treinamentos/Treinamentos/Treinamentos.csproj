@@ -201,6 +201,7 @@
     </Content>
     <Content Include="Scripts\backbone.js" />
     <Content Include="Scripts\backbone.marionette.js" />
+    <Content Include="Scripts\backbone.stickit.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\backbone-validation.js" />
     <None Include="Scripts\jquery-1.9.0-vsdoc.js" />
