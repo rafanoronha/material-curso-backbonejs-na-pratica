@@ -447,27 +447,17 @@ App.Instrutores = Backbone.Collection.extend({
     model: App.Instrutor
 });
 
-App.InstrutoresView = Backbone.View.extend({
-    template: _.template($('#instrutoresTp').html()),
-    initialize: function () {
-        this.listenTo(this.collection, 'reset', this.renderData);
-    },
+App.InstrutoresView = Marionette.CompositeView.extend({
+    template: '#instrutoresTp',
     events: {
         'click [data-action=new]': 'new'
     },
-    render: function () {
-        this.$el.html(this.template());
-        return this;
+    ui: {
+        tbody: 'tbody'
     },
-    renderData: function () {
-        var tbody = this.$('tbody');
-        this.collection.each(function (instrutor) {
-            var view = new App.InstrutorView({
-                model: instrutor,
-            });
-            view.$el.appendTo(tbody);
-            view.render();
-        }, this);
+    getItemView: function () { return App.InstrutorView },
+    appendHtml: function (collectionView, itemView, index) {
+        collectionView.ui.tbody.append(itemView.el);
     },
     'new': function (e) {
         e.preventDefault();
@@ -476,28 +466,19 @@ App.InstrutoresView = Backbone.View.extend({
     }
 });
 
-App.InstrutorView = Backbone.View.extend({
+App.InstrutorView = Marionette.ItemView.extend({
     tagName: 'tr',
-    template: _.template($('#instrutorTp').html()),
+    template: '#instrutorTp',
     events: {
         'click [data-action=delete]': 'delete',
         'click': 'select'
-    },
-    render: function () {
-        var content = this.template(this.model.toJSON());
-        this.$el.html(content);
-        return this;
     },
     'delete': function (e) {
         e.preventDefault();
         e.stopPropagation();
 
         var that = this;
-        this.model.destroy({
-            success: function () {
-                that.$el.fadeOut('slow', that.$el.remove);
-            }
-        });
+        this.model.destroy({ wait: true });
     },
     select: function () {
         App.editarInstrutor(this.model);

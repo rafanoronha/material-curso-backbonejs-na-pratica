@@ -13,6 +13,7 @@ namespace Treinamentos
                 .Include("~/Scripts/underscore.js")
                 .Include("~/Scripts/backbone.js")
                 .Include("~/Scripts/backbone-validation.js")
+                .Include("~/Scripts/backbone.marionette.js")
                 .Include("~/Scripts/bootstrap.js")
                 .Include("~/Scripts/app.js"));
 
