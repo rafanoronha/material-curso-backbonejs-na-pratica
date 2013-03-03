@@ -80,6 +80,8 @@ require(["bootstrap", "backbone", "marionette", "validation", "stickit"],
 
             return true;
         };
+
+        window.App = {};
         
         require(["app"],
             function () {

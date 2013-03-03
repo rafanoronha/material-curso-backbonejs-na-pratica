@@ -1,7 +1,5 @@
-﻿define([],
-   function () {
-       window.App = {};
-
+﻿define(['app/instrutor'],
+    function () {
        App.formatDate = function (d) {
            var date = d.getDate();
            var month = d.getMonth();
@@ -95,44 +93,9 @@
            App.formularioTurma(new App.Turma, opt);
        };
 
-       App.listarInstrutores = function (opt) {
-           opt = opt || {};
-           var options = _.extend({ fetch: true }, opt);
-           if (options.fetch) {
-               App.instrutores.fetch();
-           }
-
-           var view = new App.InstrutoresView({
-               collection: App.instrutores
-           });
-
-           App.region.show(view);
-       };
-
-       App.formularioInstrutor = function (model) {
-           var view = new App.FormularioInstrutorView({
-               model: model
-           });
-
-           App.region.show(view);
-       };
-
-       App.novoInstrutor = function () {
-           App.formularioInstrutor(new App.Instrutor);
-       };
-
-       App.editarInstrutor = function (instrutor) {
-           App.formularioInstrutor(instrutor);
-       };
-
        App.turmasBootstrap = function () {
            var turmas = JSON.parse($('#turmas').html())
            App.turmas.reset(turmas, { parse: true })
-       };
-
-       App.instrutoresBootstrap = function () {
-           var instrutores = JSON.parse($('#instrutores').html());
-           App.instrutores.reset(instrutores, { parse: true })
        };
 
        App.treinamentosBootstrap = function () {
@@ -368,94 +331,8 @@
            }
        });
 
-       App.Instrutor = Backbone.Model.extend({
-           urlRoot: '/api/instrutores/',
-           validation: {
-               nome: {
-                   required: true
-               }
-           }
-       });
-
-       App.Instrutores = Backbone.Collection.extend({
-           url: '/api/instrutores/',
-           model: App.Instrutor
-       });
-
-       App.InstrutoresView = Marionette.CompositeView.extend({
-           template: '#instrutoresTp',
-           events: {
-               'click [data-action=new]': 'new'
-           },
-           ui: {
-               tbody: 'tbody'
-           },
-           getItemView: function () { return App.InstrutorView },
-           appendHtml: function (collectionView, itemView, index) {
-               collectionView.ui.tbody.append(itemView.el);
-           },
-           'new': function (e) {
-               e.preventDefault();
-               App.novoInstrutor();
-               App.router.navigate('instrutores/novo');
-           }
-       });
-
-       App.InstrutorView = Marionette.ItemView.extend({
-           tagName: 'tr',
-           template: '#instrutorTp',
-           events: {
-               'click [data-action=delete]': 'delete',
-               'click': 'select'
-           },
-           'delete': function (e) {
-               e.preventDefault();
-               e.stopPropagation();
-
-               var that = this;
-               this.model.destroy({ wait: true });
-           },
-           select: function () {
-               App.editarInstrutor(this.model);
-               App.router.navigate('instrutores/' + this.model.id);
-           }
-       });
-
-       App.FormularioInstrutorView = Backbone.View.extend({
-           template: _.template($('#formularioInstrutorTp').html()),
-           events: {
-               'click [data-action=cancel]': 'cancel',
-               'click [data-action=submit]': 'submit'
-           },
-           bindings: {
-               '[name=nome]': 'nome'
-           },
-           initialize: function () {
-               Backbone.Validation.bind(this);
-           },
-           render: function () {
-               var data = { data: this.model.toJSON() };
-               this.$el.html(this.template(data));
-               this.stickit();
-               return this;
-           },
-           submit: function () {
-               if (this.model.isValid(true)) {
-                   this.model.save({}, { success: this.listarInstrutores });
-               }
-           },
-           cancel: function () {
-               this.listarInstrutores();
-           },
-           listarInstrutores: function () {
-               App.listarInstrutores();
-               App.router.navigate('instrutores');
-           }
-       });
-
        App.router = new App.Router();
        App.menuView = new App.MenuView();
        App.turmas = new App.Turmas();
        App.treinamentos = new App.Treinamentos();
-       App.instrutores = new App.Instrutores();
    });
