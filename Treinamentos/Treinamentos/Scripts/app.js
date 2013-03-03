@@ -1,5 +1,5 @@
-﻿define(['app/instrutor', 'app/treinamento', 'app/turma'],
-    function () {
+﻿define(['app/router', 'app/menuView', 'app/instrutor', 'app/treinamento', 'app/turma'],
+    function (Router, MenuView) {
        App.formatDate = function (d) {
            var date = d.getDate();
            var month = d.getMonth();
@@ -55,54 +55,6 @@
            }
        };
 
-       App.Router = Backbone.Router.extend({
-           routes: {
-               '': 'home',
-               'turmas/nova': 'novaTurma',
-               'instrutores': 'listarInstrutores',
-               'instrutores/novo': 'novoInstrutor',
-               'instrutores/:id': 'editarInstrutor'
-           },
-           home: function () {
-               App.listarTurmas({ fetch: false });
-               App.turmasBootstrap();
-           },
-           novaTurma: function () {
-               App.instrutoresBootstrap();
-               App.treinamentosBootstrap();
-               App.novaTurma({ fetchCombos: false });
-           },
-           listarInstrutores: function () {
-               App.listarInstrutores({ fetch: false });
-               App.instrutoresBootstrap();
-           },
-           novoInstrutor: function () {
-               App.novoInstrutor();
-           },
-           editarInstrutor: function (id) {
-               App.instrutoresBootstrap();
-               App.editarInstrutor(App.instrutores.get(id));
-           }
-       });
-
-       App.MenuView = Backbone.View.extend({
-           el: 'nav',
-           events: {
-               'click [data-action=home]': 'home',
-               'click [data-action=instrutores]': 'listarInstrutores'
-           },
-           home: function (e) {
-               e.preventDefault();
-               App.listarTurmas();
-               App.router.navigate('');
-           },
-           listarInstrutores: function (e) {
-               e.preventDefault();
-               App.listarInstrutores();
-               App.router.navigate('instrutores');
-           }
-       });
-
-       App.router = new App.Router();
-       App.menuView = new App.MenuView();
+       App.router = new Router();
+       App.menuView = new MenuView();
    });
