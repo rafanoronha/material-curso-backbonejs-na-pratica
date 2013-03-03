@@ -206,6 +206,7 @@
     <Content Include="Scripts\backbone-validation.js" />
     <None Include="Scripts\jquery-1.9.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.9.0.js" />
+    <Content Include="Scripts\app\turma.js" />
     <Content Include="Scripts\app\treinamento.js" />
     <Content Include="Scripts\app\instrutor.js" />
     <Content Include="Scripts\app\instrutor\collection.js" />
@@ -215,6 +216,11 @@
     <Content Include="Scripts\app\instrutor\model.js" />
     <Content Include="Scripts\app\treinamento\collection.js" />
     <Content Include="Scripts\app\treinamento\model.js" />
+    <Content Include="Scripts\app\turma\collection.js" />
+    <Content Include="Scripts\app\turma\collectionView.js" />
+    <Content Include="Scripts\app\turma\formView.js" />
+    <Content Include="Scripts\app\turma\itemView.js" />
+    <Content Include="Scripts\app\turma\model.js" />
     <Content Include="Scripts\libs\backbone.js" />
     <Content Include="Scripts\libs\backbone.marionette.js" />
     <Content Include="Scripts\libs\backbone.stickit.js" />
