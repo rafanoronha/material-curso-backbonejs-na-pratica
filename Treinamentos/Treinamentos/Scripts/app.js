@@ -127,18 +127,23 @@ App.listarTurmas = function (opt) {
 };
 
 App.formularioTurma = function (model, opt) {
+    function abrirFormulario() {
+        var view = new App.FormularioTurmaView({
+            model: model
+        });
+        App.region.show(view);
+    }
+
     opt = opt || {};
     var options = _.extend({ fetchCombos: true }, opt);
     if (options.fetchCombos) {
-        App.instrutores.fetch();
-        App.treinamentos.fetch();
+        $.when(
+            App.instrutores.fetch(),
+            App.treinamentos.fetch()
+        ).done(abrirFormulario);
+    } else {
+        abrirFormulario();
     }
-
-    var view = new App.FormularioTurmaView({
-        model: model
-    });
-
-    App.region.show(view);
 }
 
 App.novaTurma = function (opt) {
@@ -203,9 +208,9 @@ App.Router = Backbone.Router.extend({
         App.turmasBootstrap();
     },
     novaTurma: function () {
-        App.novaTurma({ fetchCombos: false });
         App.instrutoresBootstrap();
         App.treinamentosBootstrap();
+        App.novaTurma({ fetchCombos: false });
     },
     listarInstrutores: function () {
         App.listarInstrutores({ fetch: false });
@@ -235,24 +240,6 @@ App.MenuView = Backbone.View.extend({
         e.preventDefault();
         App.listarInstrutores();
         App.router.navigate('instrutores');
-    }
-});
-
-App.ComboView = Backbone.View.extend({
-    template: _.template($('#opcaoComboTp').html()),
-    initialize: function () {
-        this.listenTo(this.collection, 'reset', this.render);
-    },
-    render: function () {
-        var html = '<option value="">Selecione</option>';
-        this.collection.each(function (model) {
-            var option = this.template({
-                nome: model.attributes.nome,
-                valor: model.id
-            });
-            html += option;
-        }, this);
-        this.$el.html(html);
     }
 });
 
@@ -380,31 +367,45 @@ App.FormularioTurmaView = Backbone.View.extend({
         'click [data-action=submit]': 'submit',
         'click [data-action=alternate-input-mode]': 'alternateInputMode'
     },
+    bindings: {
+        '[name=codigoTreinamento]': {
+            observe: 'codigoTreinamento',
+            selectOptions: {
+                collection: 'App.treinamentos',
+                labelPath: 'nome',
+                valuePath: 'id',
+                defaultOption: {
+                    label: 'Selecione',
+                    value: ''
+                }
+            }
+        },
+        '[name=nomeNovoTreinamento]': 'nomeNovoTreinamento',
+        '[name=codigoInstrutor]': {
+            observe: 'codigoInstrutor',
+            selectOptions: {
+                collection: 'App.instrutores',
+                labelPath: 'nome',
+                valuePath: 'id',
+                defaultOption: {
+                    label: 'Selecione',
+                    value: ''
+                }
+            }
+        },
+        '[name=nomeNovoInstrutor]': 'nomeNovoInstrutor',
+        '[name=inicio]': 'inicio',
+        '[name=fim]': 'fim'
+    },
     initialize: function() {
         Backbone.Validation.bind(this);
     },
-    remove: function () {
-        Backbone.View.prototype.remove.call(this);
-        this.comboTreinamento.remove();
-        this.comboInstrutor.remove();
-    },
     render: function () {
         this.$el.html(this.template());
-        this.carregarCombos();
+        this.stickit();
         return this;
     },
     submit: function () {
-        var attributes = {
-            codigoTreinamento: this.$('[name=codigoTreinamento]').val(),
-            nomeNovoTreinamento: this.$('[name=nomeNovoTreinamento]').val(),
-            codigoInstrutor: this.$('[name=codigoInstrutor]').val(),
-            nomeNovoInstrutor: this.$('[name=nomeNovoInstrutor]').val(),
-            inicio: this.$('[name=inicio]').val(),
-            fim: this.$('[name=fim]').val()
-        };
-
-        this.model.set(attributes);
-
         if (this.model.isValid(true)) {
             this.model.save({}, { success: this.listarTurmas });
         }
@@ -416,17 +417,6 @@ App.FormularioTurmaView = Backbone.View.extend({
         App.listarTurmas();
         App.router.navigate('');
         this.remove();
-    },
-    carregarCombos: function () {
-        this.comboTreinamento = new App.ComboView({
-            el: this.$('[name=codigoTreinamento]'),
-            collection: App.treinamentos
-        });
-
-        this.comboInstrutor = new App.ComboView({
-            el: this.$('[name=codigoInstrutor]'),
-            collection: App.instrutores
-        });
     },
     alternateInputMode: function () {
         App.alternateInputMode.apply(this, arguments);
