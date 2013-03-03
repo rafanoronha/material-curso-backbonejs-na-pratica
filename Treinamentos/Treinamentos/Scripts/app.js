@@ -1,4 +1,4 @@
-﻿define(['app/instrutor'],
+﻿define(['app/instrutor', 'app/treinamento'],
     function () {
        App.formatDate = function (d) {
            var date = d.getDate();
@@ -96,11 +96,6 @@
        App.turmasBootstrap = function () {
            var turmas = JSON.parse($('#turmas').html())
            App.turmas.reset(turmas, { parse: true })
-       };
-
-       App.treinamentosBootstrap = function () {
-           var treinamentos = JSON.parse($('#treinamentos').html())
-           App.treinamentos.reset(treinamentos, { parse: true })
        };
 
        App.Router = Backbone.Router.extend({
@@ -215,14 +210,6 @@
            model: App.Turma
        });
 
-       App.Treinamento = Backbone.Model.extend({
-       });
-
-       App.Treinamentos = Backbone.Collection.extend({
-           url: '/api/treinamentos/',
-           model: App.Treinamento
-       });
-
        App.TurmasView = Backbone.View.extend({
            template: _.template($('#turmasTp').html()),
            initialize: function () {
@@ -334,5 +321,4 @@
        App.router = new App.Router();
        App.menuView = new App.MenuView();
        App.turmas = new App.Turmas();
-       App.treinamentos = new App.Treinamentos();
    });
