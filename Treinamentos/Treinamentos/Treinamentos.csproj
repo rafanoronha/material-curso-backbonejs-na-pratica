@@ -199,6 +199,8 @@
     <Content Include="App_Data\Treinamentos_log.ldf">
       <DependentUpon>Treinamentos.mdf</DependentUpon>
     </Content>
+    <Content Include="Build\build.js" />
+    <Content Include="Build\r.js" />
     <Content Include="Scripts\backbone.js" />
     <Content Include="Scripts\backbone.marionette.js" />
     <Content Include="Scripts\backbone.stickit.js" />

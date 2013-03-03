@@ -115,4 +115,8 @@
     @Html.Raw(@Html.Action("InstrutoresBootstrap"))
 </script>
 
-<script type="text/javascript" src="~/Scripts/libs/require.js" data-main="Scripts/main.js"></script>
+@{
+  string mainPath = "Scripts/main";
+  //string mainPath = "Content/dist/main-release";   
+}
+<script type="text/javascript" src="~/Scripts/libs/require.js" data-main="@mainPath"></script>

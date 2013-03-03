@@ -1,5 +1,4 @@
 ﻿require.config({
-    baseUrl: "./Scripts",
     paths: {
         "jquery": "libs/jquery-1.9.0",
         "bootstrap": "libs/bootstrap",
